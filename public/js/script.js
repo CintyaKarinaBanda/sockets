@@ -31,13 +31,14 @@ enviarDatosUsuario.addEventListener("submit", (e) => {
     e.preventDefault();
     //   Recivir datos
     var usuario = {
+        id: document.getElementById("idUsuario").value,
         nombre: document.getElementById("nombre").value,
         usuario: document.getElementById("usuario").value,
         password: document.getElementById("password").value,
     };
 
     socket.emit("clienteGuardarUsuario", usuario);
-    socket.on("servidorUsuarioGuardado", (mensaje) => {
+    socket.on("servidorUsuarioMensaje", (mensaje) => {
         mensajeUsuario.innerHTML = mensaje;
         setTimeout(() => {
             mensajeUsuario.innerHTML = "";
@@ -55,12 +56,22 @@ enviarDatosUsuario.addEventListener("submit", (e) => {
 
 // Modificar datos de un registro en la base de datos de MongoDB
 function editarUsuario(id) {
-
+    socket.emit("clienteObtenerUsuarioPorId",id);
 }
+socket.on("servidorObtenerUsuarioPorId",(usuario)=>{
+    document.getElementById("tituloUsuario").innerHTML = "Editar Usuario";
+    document.getElementById("botonUsuario").innerHTML = "Guardar Cambios";
+    document.getElementById("idUsuario").value = usuario._id;
+    document.getElementById("nombre").value = usuario.nombre;
+    document.getElementById("usuario").value = usuario.usuario;
+    document.getElementById("password").value = usuario.password;
+});
+
 // Eliminar datos de la base de datos de MongoDB
 function borrarUsuario(id) {
-
+    socket.emit("clienteBorrarUsuario", id);
 }
+
 
 // PRODUCTOS
 socket.on("ServidorEnviarProductos", (productos) => {
@@ -73,8 +84,8 @@ socket.on("ServidorEnviarProductos", (productos) => {
             <td>${producto.descripcion}</td>
             <td>${producto.precio}</td>
             <td>
-                <a href="#" onclick="editarUsuario('${producto._id}')">Editar</a> /
-                <a href="#" onclick="borrarUsuario('${producto._id}')">Borrar</a>
+                <a href="#" onclick="editarProducto('${producto._id}')">Editar</a> /
+                <a href="#" onclick="borrarProducto('${producto._id}')">Borrar</a>
             </td>
             </tr>
             `;
@@ -86,6 +97,7 @@ enviarDatosProducto.addEventListener("submit", (e) => {
     e.preventDefault();
     //   Recivir datos
     var producto = {
+        id: document.getElementById("idProducto").value,
         producto: document.getElementById("producto").value,
         descripcion: document.getElementById("descripcion").value,
         precio: document.getElementById("precio").value,
@@ -108,16 +120,26 @@ enviarDatosProducto.addEventListener("submit", (e) => {
 });
 
 // Modificar datos de un registro en la base de datos de MongoDB
-function editarUsuario(id) {
-
+function editarProducto(id) {
+    socket.emit("clienteObtenerProductoPorId",id);
 }
+socket.on("servidorObtenerProductoPorId",(usuario)=>{
+    console.log(usuario._id);
+    document.getElementById("tituloProducto").innerHTML = "Editar Usuario";
+    document.getElementById("botonProducto").innerHTML = "Guardar Cambios";
+    document.getElementById("idProducto").value = usuario._id;
+    document.getElementById("producto").value = usuario.producto;
+    document.getElementById("descripcion").value = usuario.descripcion;
+    document.getElementById("precio").value = usuario.precio;
+});
+
 // Eliminar datos de la base de datos de MongoDB
-function borrarUsuario(id) {
-
+function borrarProducto(id) {
+    socket.emit("clienteBorrarProducto", id);
 }
+
 
 // FUNCION MENU
-
 function showPage(pageId) {
     const pages = document.querySelectorAll('.content');
     const links = document.querySelectorAll('.nav-link');
